@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GameBoard;
 
 namespace xadrez_console {
     class Program {
         static void Main(string[] args) {
+            Gameboard board = new Gameboard(8, 8);
+
+            Screen.PrintGameboard(board);
         }
     }
 }
