@@ -1,24 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GameBoard
+﻿namespace GameBoard
 {
-    class Piece
+    abstract class Piece
     {
         public Position Position { get; set; }
         public Color Color { get; protected set; }
         public int QuantityOfMovesMade { get; protected set; }
         public Gameboard Board { get; protected set; }
 
-        public Piece(Position position, Color color, Gameboard board)
+        public Piece(Color color, Gameboard board)
         {
-            Position = position;
+            Position = null;
             Color = color;
             Board = board;
-            QuantityOfMovesMade = 0;
         }
+
+        public void IncrementMovesQuantity()
+        {
+            QuantityOfMovesMade++;
+        }
+
+        public abstract bool[,] PossibleMoves();
     }
 }

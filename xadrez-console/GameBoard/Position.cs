@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GameBoard
+﻿namespace GameBoard
 {
     class Position
     {
@@ -16,6 +14,12 @@ namespace GameBoard
         public override string ToString()
         {
             return $"{Line}, {Column}";
+        }
+
+        public void SetPosition(int line, int column)
+        {
+            Line = line;
+            Column = column;
         }
     }
 }
