@@ -25,7 +25,7 @@
 
         public void PlacePieceInPosition(Piece piece, Position position)
         {
-            if(isOccupiedPosition(position))
+            if (isOccupiedPosition(position))
                 throw new GameBoardException("Position occupied by another piece!");
 
             _pieces[position.Line, position.Column] = piece;
@@ -51,7 +51,7 @@
 
         public bool isValidPosition(Position position)
         {
-            if (position.Line < 0 || position.Line > Lines || position.Column < 0 || position.Column > Columns)
+            if (position.Line < 0 || position.Line >= Lines || position.Column < 0 || position.Column >= Columns)
             {
                 return false;
             }

@@ -19,6 +19,12 @@
             QuantityOfMovesMade++;
         }
 
+        protected bool canMoveToPosition(Position position)
+        {
+            Piece piece = Board.PiecePlace(position);
+            return piece == null || piece.Color != Color;
+        }
+
         public abstract bool[,] PossibleMoves();
     }
 }

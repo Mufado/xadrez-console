@@ -17,10 +17,18 @@ namespace xadrez_console
                     Console.Clear();
                     Screen.PrintGameboard(match.Board);
 
-                    Console.Write("Inform the piece atual position: ");
+                    Console.WriteLine($"\nTurn {match.Turn}");
+                    Console.WriteLine($"{match.TurnPlayer} pieces player turn!");
+
+                    Console.Write("\nInform the piece atual position: ");
                     Position origin = Screen.ReadInsertedPosition().toPosition();
-                    Console.Write("Inform the piece destination position: ");
+
+                    Console.Clear();
+                    Screen.PrintGameboard(match.Board, match.Board.PiecePlace(origin).PossibleMoves());
+
+                    Console.Write("\nInform the piece destination position: ");
                     Position destination = Screen.ReadInsertedPosition().toPosition();
+                    
                     match.MakeAMove(origin, destination);
                 }
             }
