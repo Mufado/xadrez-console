@@ -14,27 +14,37 @@ namespace xadrez_console
 
                 while (!match.Finished)
                 {
-                    Console.Clear();
-                    Screen.PrintGameboard(match.Board);
+                    try
+                    {
+                        Console.Clear();
+                        Screen.PrintGameboard(match.Board);
 
-                    Console.WriteLine($"\nTurn {match.Turn}");
-                    Console.WriteLine($"{match.TurnPlayer} pieces player turn!");
+                        Console.WriteLine($"\nTurn {match.Turn}");
+                        Console.WriteLine($"{match.TurnPlayer} pieces player turn!");
 
-                    Console.Write("\nInform the piece atual position: ");
-                    Position origin = Screen.ReadInsertedPosition().toPosition();
+                        Console.Write("\nInform the piece atual position: ");
+                        Position origin = Screen.ReadInsertedPosition().toPosition();
+                        match.validOriginPosition(match.Board.PiecePlace(origin));
 
-                    Console.Clear();
-                    Screen.PrintGameboard(match.Board, match.Board.PiecePlace(origin).PossibleMoves());
+                        Console.Clear();
+                        Screen.PrintGameboard(match.Board, match.Board.PiecePlace(origin).PossibleMoves);
 
-                    Console.Write("\nInform the piece destination position: ");
-                    Position destination = Screen.ReadInsertedPosition().toPosition();
-                    
-                    match.MakeAMove(origin, destination);
+                        Console.Write("\nInform the piece destination position: ");
+                        Position destination = Screen.ReadInsertedPosition().toPosition();
+                        match.validDestinationPosition(origin, destination);
+
+                        match.MakeAPlay(origin, destination);
+                    }
+                    catch (GameBoardException e)
+                    {
+                        Console.WriteLine($"\n{e.Message}");
+                        Console.ReadLine();
+                    }
                 }
             }
             catch (GameBoardException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine($"\n{e.Message}");
             }
         }
     }

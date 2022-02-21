@@ -1,5 +1,5 @@
 ﻿using GameBoard;
-using System;
+using System.Collections.Generic;
 
 namespace GameRules
 {
@@ -9,6 +9,9 @@ namespace GameRules
         public int Turn { get; private set; }
         public Color TurnPlayer { get; private set; }
         public bool Finished { get; private set; }
+        private HashSet<Piece> PiecesSet { get; set; }
+        private HashSet<Piece> CollectedWhitePiecesSet { get; set; }
+        private HashSet<Piece> CollectedBlackPiecesSet { get; set; }
 
         public GameMatch()
         {
@@ -16,24 +19,33 @@ namespace GameRules
             Turn = 1;
             TurnPlayer = Color.White;
             Finished = false;
+            PiecesSet = new HashSet<Piece>();
+            CollectedWhitePiecesSet = new HashSet<Piece>();
+            CollectedBlackPiecesSet = new HashSet<Piece>();
             InitializatePieces();
+        }
+
+        private void CreatePiece(char column, int line, Piece piece)
+        {
+            Board.PlacePieceInPosition(piece, new BoardPosition(column, line).toPosition());
+            PiecesSet.Add(piece);
         }
 
         private void InitializatePieces()
         {
-            Board.PlacePieceInPosition(new King(Color.White, Board), new BoardPosition('d', 1).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.White, Board), new BoardPosition('c', 1).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.White, Board), new BoardPosition('c', 2).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.White, Board), new BoardPosition('d', 2).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.White, Board), new BoardPosition('e', 2).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.White, Board), new BoardPosition('e', 1).toPosition());
+            CreatePiece('d', 1, new King(Color.White, Board));
+            CreatePiece('c', 1, new Tower(Color.White, Board));
+            CreatePiece('c', 2, new Tower(Color.White, Board));
+            CreatePiece('d', 2, new Tower(Color.White, Board));
+            CreatePiece('e', 2, new Tower(Color.White, Board));
+            CreatePiece('e', 1, new Tower(Color.White, Board));
 
-            Board.PlacePieceInPosition(new King(Color.Black, Board), new BoardPosition('d', 8).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.Black, Board), new BoardPosition('c', 8).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.Black, Board), new BoardPosition('c', 7).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.Black, Board), new BoardPosition('d', 7).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.Black, Board), new BoardPosition('e', 7).toPosition());
-            Board.PlacePieceInPosition(new Tower(Color.Black, Board), new BoardPosition('e', 8).toPosition());
+            CreatePiece('d', 8, new King(Color.Black, Board));
+            CreatePiece('c', 8, new Tower(Color.Black, Board));
+            CreatePiece('c', 7, new Tower(Color.Black, Board));
+            CreatePiece('d', 7, new Tower(Color.Black, Board));
+            CreatePiece('e', 7, new Tower(Color.Black, Board));
+            CreatePiece('e', 8, new Tower(Color.Black, Board));
         }
 
         public void MakeAMove(Position origin, Position destination)
@@ -41,6 +53,14 @@ namespace GameRules
             Piece originPiece = Board.RemovePieceFromPosition(origin);
             originPiece.IncrementMovesQuantity();
             Piece destinationPiece = Board.RemovePieceFromPosition(destination);
+            if (destinationPiece != null)
+            {
+                if (destinationPiece.Color == Color.White)
+                    CollectedWhitePiecesSet.Add(destinationPiece);
+                else
+                    CollectedBlackPiecesSet.Add(destinationPiece);
+                PiecesSet.Remove(destinationPiece);
+            }
             Board.PlacePieceInPosition(originPiece, destination);
         }
 
@@ -57,6 +77,39 @@ namespace GameRules
                 TurnPlayer = Color.Black;
             else
                 TurnPlayer = Color.White;
+        }
+
+        public HashSet<Piece> GetAllCollectedPiecesSet()
+        {
+            HashSet<Piece> allCollectedPiecesSet = new HashSet<Piece>();
+            allCollectedPiecesSet.UnionWith(CollectedBlackPiecesSet);
+            allCollectedPiecesSet.UnionWith(CollectedWhitePiecesSet);
+            return allCollectedPiecesSet;
+        }
+
+        public void validOriginPosition(Piece piece)
+        {
+            if (piece == null)
+            {
+                throw new GameBoardException("There are no pieces in origin position!");
+            }
+            if (piece.Color != TurnPlayer)
+            {
+                throw new GameBoardException("This piece is not yours!");
+            }
+            piece.UpdatePossibleMoves();
+            if (!piece.canMakeAMove())
+            {
+                throw new GameBoardException("This piece cannot move!");
+            }
+        }
+
+        public void validDestinationPosition(Position origin, Position destination)
+        {
+            if (!Board.PiecePlace(origin).canMoveToPositionWithRules(destination))
+            {
+                throw new GameBoardException("This piece cannot move to this position!");
+            }
         }
     }
 }

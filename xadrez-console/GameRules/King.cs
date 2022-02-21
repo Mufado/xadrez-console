@@ -8,7 +8,7 @@ namespace GameRules
         {
         }
 
-        public override bool[,] PossibleMoves()
+        public override bool[,] GetPossibleMoves()
         {
             bool[,] movesMatrix = new bool[Board.Lines, Board.Columns];
             Position position = new Position(0, 0);
