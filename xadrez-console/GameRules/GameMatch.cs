@@ -9,9 +9,10 @@ namespace GameRules
         public int Turn { get; private set; }
         public Color TurnPlayer { get; private set; }
         public bool Finished { get; private set; }
+        public bool Checkmated { get; private set; }
         private HashSet<Piece> PiecesSet { get; set; }
-        private HashSet<Piece> CollectedWhitePiecesSet { get; set; }
-        private HashSet<Piece> CollectedBlackPiecesSet { get; set; }
+        public HashSet<Piece> CollectedWhitePiecesSet { get; private set; }
+        public HashSet<Piece> CollectedBlackPiecesSet { get; private set; }
 
         public GameMatch()
         {
@@ -19,6 +20,7 @@ namespace GameRules
             Turn = 1;
             TurnPlayer = Color.White;
             Finished = false;
+            Checkmated = false;
             PiecesSet = new HashSet<Piece>();
             CollectedWhitePiecesSet = new HashSet<Piece>();
             CollectedBlackPiecesSet = new HashSet<Piece>();
@@ -48,10 +50,11 @@ namespace GameRules
             CreatePiece('e', 8, new Tower(Color.Black, Board));
         }
 
-        public void MakeAMove(Position origin, Position destination)
+        public Piece MakeAMove(Position origin, Position destination)
         {
             Piece originPiece = Board.RemovePieceFromPosition(origin);
             originPiece.IncrementMovesQuantity();
+
             Piece destinationPiece = Board.RemovePieceFromPosition(destination);
             if (destinationPiece != null)
             {
@@ -61,12 +64,41 @@ namespace GameRules
                     CollectedBlackPiecesSet.Add(destinationPiece);
                 PiecesSet.Remove(destinationPiece);
             }
+
             Board.PlacePieceInPosition(originPiece, destination);
+
+            return destinationPiece;
+        }
+
+        private void RollbackPlay(Position origin, Position destination, Piece collectedPiece)
+        {
+            Piece initialPiece = Board.RemovePieceFromPosition(origin);
+            Board.PlacePieceInPosition(initialPiece, origin);
+            if (collectedPiece != null)
+            {
+                Board.PlacePieceInPosition(collectedPiece, destination);
+                if (collectedPiece.Color == Color.White)
+                    CollectedWhitePiecesSet.Remove(collectedPiece);
+                else
+                    CollectedBlackPiecesSet.Remove(collectedPiece);
+            }
+            initialPiece.DecrementMovesQuantity();
         }
 
         public void MakeAPlay(Position origin, Position destination)
         {
-            MakeAMove(origin, destination);
+            Piece collectedPiece = MakeAMove(origin, destination);
+
+            if (isCheckmate(TurnPlayer))
+            {
+                RollbackPlay(origin, destination, collectedPiece);
+                throw new GameBoardException("You cannot put yourself in check-mate!");
+            }
+            if (isCheckmate(GetEnemyColor(TurnPlayer)))
+                Checkmated = true;
+            else
+                Checkmated = false;
+
             Turn++;
             ChangeTurnPlayer();
         }
@@ -87,7 +119,39 @@ namespace GameRules
             return allCollectedPiecesSet;
         }
 
-        public void validOriginPosition(Piece piece)
+        private Color GetEnemyColor(Color player)
+        {
+            if (player == Color.White)
+                return Color.Black;
+            else
+                return Color.White;
+        }
+
+        private Piece GetKingPiece(Color playerColor)
+        {
+            foreach (var piece in PiecesSet)
+            {
+                if (piece.Color == playerColor && piece is King)
+                    return piece;
+            }
+
+            throw new GameBoardException($"There is an king missing in {playerColor} pieces!");
+        }
+
+        private bool isCheckmate(Color player)
+        {
+            Piece king = GetKingPiece(player);
+
+            Color enemy = GetEnemyColor(player);
+            foreach (var piece in PiecesSet)
+            {
+                if (piece.Color == enemy && piece.PossibleMoves[king.Position.Line, king.Position.Column] == true)
+                    return true;
+            }
+            return false;
+        }
+
+        public void ValidOriginPosition(Piece piece)
         {
             if (piece == null)
             {
@@ -104,7 +168,7 @@ namespace GameRules
             }
         }
 
-        public void validDestinationPosition(Position origin, Position destination)
+        public void ValidDestinationPosition(Position origin, Position destination)
         {
             if (!Board.PiecePlace(origin).canMoveToPositionWithRules(destination))
             {

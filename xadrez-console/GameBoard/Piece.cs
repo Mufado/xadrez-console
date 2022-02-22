@@ -16,10 +16,9 @@
             PossibleMoves = null;
         }
 
-        public void IncrementMovesQuantity()
-        {
-            QuantityOfMovesMade++;
-        }
+        public void IncrementMovesQuantity() => QuantityOfMovesMade++;
+
+        public void DecrementMovesQuantity() => QuantityOfMovesMade--;
 
         protected bool canMoveToPosition(Position position)
         {
@@ -27,10 +26,7 @@
             return piece == null || piece.Color != Color;
         }
 
-        public bool canMoveToPositionWithRules(Position position)
-        {
-            return PossibleMoves[position.Line, position.Column];
-        }
+        public bool canMoveToPositionWithRules(Position position) => PossibleMoves[position.Line, position.Column];
 
         public bool canMakeAMove()
         {
@@ -45,10 +41,7 @@
             return false;
         }
 
-        public void UpdatePossibleMoves()
-        {
-            PossibleMoves = GetPossibleMoves();
-        }
+        public void UpdatePossibleMoves() => PossibleMoves = GetPossibleMoves();
 
         public abstract bool[,] GetPossibleMoves();
     }

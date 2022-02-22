@@ -16,22 +16,19 @@ namespace xadrez_console
                 {
                     try
                     {
-                        Console.Clear();
-                        Screen.PrintGameboard(match.Board);
-
-                        Console.WriteLine($"\nTurn {match.Turn}");
-                        Console.WriteLine($"{match.TurnPlayer} pieces player turn!");
+                        Screen.PrintMatch(match);
 
                         Console.Write("\nInform the piece atual position: ");
-                        Position origin = Screen.ReadInsertedPosition().toPosition();
-                        match.validOriginPosition(match.Board.PiecePlace(origin));
+                        Position origin = Screen. ReadInsertedPosition().toPosition();
+                        match.ValidOriginPosition(match.Board.PiecePlace(origin));
 
                         Console.Clear();
-                        Screen.PrintGameboard(match.Board, match.Board.PiecePlace(origin).PossibleMoves);
+
+                        Screen.PrintMatch(match, match.Board.PiecePlace(origin).PossibleMoves);
 
                         Console.Write("\nInform the piece destination position: ");
                         Position destination = Screen.ReadInsertedPosition().toPosition();
-                        match.validDestinationPosition(origin, destination);
+                        match.ValidDestinationPosition(origin, destination);
 
                         match.MakeAPlay(origin, destination);
                     }
