@@ -147,20 +147,43 @@ namespace xadrez_console
         {
             Console.Clear();
             PrintGameboard(match.Board);
+            PrintCheck(match);
             PrintCollectedPieces(match.CollectedWhitePiecesSet, match.CollectedBlackPiecesSet);
 
+            ConsoleColor aux = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"\nTurn {match.Turn}");
             Console.WriteLine($"{match.TurnPlayer} pieces player turn!");
+            Console.ForegroundColor = aux;
         }
 
         public static void PrintMatch(GameMatch match, bool[,] movesMatrix)
         {
             Console.Clear();
             PrintGameboard(match.Board, movesMatrix);
+            PrintCheck(match);
             PrintCollectedPieces(match.CollectedWhitePiecesSet, match.CollectedBlackPiecesSet);
 
+            ConsoleColor aux = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"\nTurn {match.Turn}");
-            Console.WriteLine($"{match.TurnPlayer} pieces player turn!");
+            Console.WriteLine($"{match.TurnPlayer} pieces turn!");
+            Console.ForegroundColor = aux;
+        }
+
+        private static void PrintCheck(GameMatch match)
+        {
+            if (match.Checked)
+            {
+                ConsoleColor aux = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write($"\n{match.TurnPlayer.ToString().ToUpper()} is in");
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.Write(" CHECK");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("!");
+                Console.ForegroundColor = aux;
+            }
         }
     }
 }

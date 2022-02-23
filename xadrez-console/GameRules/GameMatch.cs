@@ -9,7 +9,7 @@ namespace GameRules
         public int Turn { get; private set; }
         public Color TurnPlayer { get; private set; }
         public bool Finished { get; private set; }
-        public bool Checkmated { get; private set; }
+        public bool Checked { get; private set; }
         private HashSet<Piece> PiecesSet { get; set; }
         public HashSet<Piece> CollectedWhitePiecesSet { get; private set; }
         public HashSet<Piece> CollectedBlackPiecesSet { get; private set; }
@@ -20,7 +20,7 @@ namespace GameRules
             Turn = 1;
             TurnPlayer = Color.White;
             Finished = false;
-            Checkmated = false;
+            Checked = false;
             PiecesSet = new HashSet<Piece>();
             CollectedWhitePiecesSet = new HashSet<Piece>();
             CollectedBlackPiecesSet = new HashSet<Piece>();
@@ -48,6 +48,8 @@ namespace GameRules
             CreatePiece('d', 7, new Tower(Color.Black, Board));
             CreatePiece('e', 7, new Tower(Color.Black, Board));
             CreatePiece('e', 8, new Tower(Color.Black, Board));
+
+            UpdatePiecesPossibleMoves();
         }
 
         public Piece MakeAMove(Position origin, Position destination)
@@ -66,13 +68,31 @@ namespace GameRules
             }
 
             Board.PlacePieceInPosition(originPiece, destination);
-
+            UpdatePiecesPossibleMoves();
             return destinationPiece;
+        }
+
+        public void MakeAPlay(Position origin, Position destination)
+        {
+            Piece collectedPiece = MakeAMove(origin, destination);
+
+            if (isCheckmate(TurnPlayer))
+            {
+                RollbackPlay(origin, destination, collectedPiece);
+                throw new GameBoardException("You cannot put yourself in check!");
+            }
+            if (isCheckmate(GetEnemyColor(TurnPlayer)))
+                Checked = true;
+            else
+                Checked = false;
+
+            Turn++;
+            ChangeTurnPlayer();
         }
 
         private void RollbackPlay(Position origin, Position destination, Piece collectedPiece)
         {
-            Piece initialPiece = Board.RemovePieceFromPosition(origin);
+            Piece initialPiece = Board.RemovePieceFromPosition(destination);
             Board.PlacePieceInPosition(initialPiece, origin);
             if (collectedPiece != null)
             {
@@ -83,24 +103,7 @@ namespace GameRules
                     CollectedBlackPiecesSet.Remove(collectedPiece);
             }
             initialPiece.DecrementMovesQuantity();
-        }
-
-        public void MakeAPlay(Position origin, Position destination)
-        {
-            Piece collectedPiece = MakeAMove(origin, destination);
-
-            if (isCheckmate(TurnPlayer))
-            {
-                RollbackPlay(origin, destination, collectedPiece);
-                throw new GameBoardException("You cannot put yourself in check-mate!");
-            }
-            if (isCheckmate(GetEnemyColor(TurnPlayer)))
-                Checkmated = true;
-            else
-                Checkmated = false;
-
-            Turn++;
-            ChangeTurnPlayer();
+            UpdatePiecesPossibleMoves();
         }
 
         private void ChangeTurnPlayer()
@@ -141,7 +144,6 @@ namespace GameRules
         private bool isCheckmate(Color player)
         {
             Piece king = GetKingPiece(player);
-
             Color enemy = GetEnemyColor(player);
             foreach (var piece in PiecesSet)
             {
@@ -161,7 +163,6 @@ namespace GameRules
             {
                 throw new GameBoardException("This piece is not yours!");
             }
-            piece.UpdatePossibleMoves();
             if (!piece.canMakeAMove())
             {
                 throw new GameBoardException("This piece cannot move!");
@@ -173,6 +174,14 @@ namespace GameRules
             if (!Board.PiecePlace(origin).canMoveToPositionWithRules(destination))
             {
                 throw new GameBoardException("This piece cannot move to this position!");
+            }
+        }
+
+        private void UpdatePiecesPossibleMoves()
+        {
+            foreach (var piece in PiecesSet)
+            {
+                piece.UpdatePossibleMoves();
             }
         }
     }
