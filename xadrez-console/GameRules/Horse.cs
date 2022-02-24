@@ -2,9 +2,9 @@
 
 namespace GameRules
 {
-    class King : Piece
+    class Horse : Piece
     {
-        public King(Color color, Gameboard board) : base(color, board)
+        public Horse(Color color, Gameboard board) : base(color, board)
         {
         }
 
@@ -13,64 +13,64 @@ namespace GameRules
             bool[,] movesMatrix = new bool[Board.Lines, Board.Columns];
             Position position = new Position(0, 0);
 
-            #region Up
-            position.SetPosition(Position.Line - 1, Position.Column);
+            #region Upper right
+            position.SetPosition(Position.Line - 2, Position.Column + 1);
             if (Board.isValidPosition(position) && canMoveToPosition(position))
             {
                 movesMatrix[position.Line, position.Column] = true;
             }
             #endregion
 
-            #region UpRight
-            position.SetPosition(Position.Line - 1, Position.Column + 1);
+            #region Right up
+            position.SetPosition(Position.Line - 1, Position.Column + 2);
             if (Board.isValidPosition(position) && canMoveToPosition(position))
             {
                 movesMatrix[position.Line, position.Column] = true;
             }
             #endregion
 
-            #region Right
-            position.SetPosition(Position.Line, Position.Column + 1);
+            #region Right down
+            position.SetPosition(Position.Line + 1, Position.Column + 2);
             if (Board.isValidPosition(position) && canMoveToPosition(position))
             {
                 movesMatrix[position.Line, position.Column] = true;
             }
             #endregion
 
-            #region DownRight
-            position.SetPosition(Position.Line + 1, Position.Column + 1);
+            #region Lower right
+            position.SetPosition(Position.Line + 2, Position.Column + 1);
             if (Board.isValidPosition(position) && canMoveToPosition(position))
             {
                 movesMatrix[position.Line, position.Column] = true;
             }
             #endregion
 
-            #region Down
-            position.SetPosition(Position.Line + 1, Position.Column);
+            #region Lower left
+            position.SetPosition(Position.Line + 2, Position.Column - 1);
             if (Board.isValidPosition(position) && canMoveToPosition(position))
             {
                 movesMatrix[position.Line, position.Column] = true;
             }
             #endregion
 
-            #region DownLeft
-            position.SetPosition(Position.Line + 1, Position.Column - 1);
+            #region Left down
+            position.SetPosition(Position.Line + 1, Position.Column - 2);
             if (Board.isValidPosition(position) && canMoveToPosition(position))
             {
                 movesMatrix[position.Line, position.Column] = true;
             }
             #endregion
 
-            #region Left
-            position.SetPosition(Position.Line, Position.Column - 1);
+            #region Left up
+            position.SetPosition(Position.Line - 1, Position.Column - 2);
             if (Board.isValidPosition(position) && canMoveToPosition(position))
             {
                 movesMatrix[position.Line, position.Column] = true;
             }
             #endregion
 
-            #region UpLeft
-            position.SetPosition(Position.Line - 1, Position.Column - 1);
+            #region Upper left
+            position.SetPosition(Position.Line - 2, Position.Column - 1);
             if (Board.isValidPosition(position) && canMoveToPosition(position))
             {
                 movesMatrix[position.Line, position.Column] = true;
@@ -79,6 +79,7 @@ namespace GameRules
 
             return movesMatrix;
         }
-        public override string ToString() => "K";
+
+        public override string ToString() => "H";
     }
 }

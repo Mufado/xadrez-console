@@ -18,17 +18,19 @@ namespace xadrez_console
                     {
                         Screen.PrintMatch(match);
 
+                        #region Get place of the piece that will be moved
                         Console.Write("\nInform the piece atual position: ");
                         Position origin = Screen. ReadInsertedPosition().toPosition();
                         match.ValidOriginPosition(match.Board.PiecePlace(origin));
-
-                        Console.Clear();
+                        #endregion
 
                         Screen.PrintMatch(match, match.Board.PiecePlace(origin).PossibleMoves);
 
+                        #region Get the destination of the geted piece
                         Console.Write("\nInform the piece destination position: ");
                         Position destination = Screen.ReadInsertedPosition().toPosition();
                         match.ValidDestinationPosition(origin, destination);
+                        #endregion
 
                         match.MakeAPlay(origin, destination);
                     }
@@ -38,6 +40,8 @@ namespace xadrez_console
                         Console.ReadLine();
                     }
                 }
+                Console.Clear();
+                Screen.PrintMatch(match);
             }
             catch (GameBoardException e)
             {

@@ -150,11 +150,14 @@ namespace xadrez_console
             PrintCheck(match);
             PrintCollectedPieces(match.CollectedWhitePiecesSet, match.CollectedBlackPiecesSet);
 
-            ConsoleColor aux = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"\nTurn {match.Turn}");
-            Console.WriteLine($"{match.TurnPlayer} pieces player turn!");
-            Console.ForegroundColor = aux;
+            if (!match.Finished)
+            {
+                ConsoleColor aux = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"\nTurn {match.Turn}");
+                Console.WriteLine($"{match.TurnPlayer} pieces player turn!");
+                Console.ForegroundColor = aux;
+            }
         }
 
         public static void PrintMatch(GameMatch match, bool[,] movesMatrix)
@@ -176,12 +179,22 @@ namespace xadrez_console
             if (match.Checked)
             {
                 ConsoleColor aux = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.Write($"\n{match.TurnPlayer.ToString().ToUpper()} is in");
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.Write(" CHECK");
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("!");
+                if (!match.Finished)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write($"\n{match.TurnPlayer.ToString().ToUpper()} is in");
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.Write(" CHECK");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("!");
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.WriteLine("\n\tCHECKMATE!");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"\n{match.TurnPlayer.ToString().ToUpper()} is the match winner!\n");
+                }
                 Console.ForegroundColor = aux;
             }
         }

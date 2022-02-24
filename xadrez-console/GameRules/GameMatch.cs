@@ -35,19 +35,43 @@ namespace GameRules
 
         private void InitializatePieces()
         {
-            CreatePiece('d', 1, new King(Color.White, Board));
-            CreatePiece('c', 1, new Tower(Color.White, Board));
-            CreatePiece('c', 2, new Tower(Color.White, Board));
-            CreatePiece('d', 2, new Tower(Color.White, Board));
-            CreatePiece('e', 2, new Tower(Color.White, Board));
-            CreatePiece('e', 1, new Tower(Color.White, Board));
+            #region White pieces
+            CreatePiece('e', 1, new King(Color.White, Board));
+            CreatePiece('d', 1, new Queen(Color.White, Board));
+            CreatePiece('c', 1, new Bishop(Color.White, Board));
+            CreatePiece('f', 1, new Bishop(Color.White, Board));
+            CreatePiece('b', 1, new Horse(Color.White, Board));
+            CreatePiece('g', 1, new Horse(Color.White, Board));
+            CreatePiece('a', 1, new Tower(Color.White, Board));
+            CreatePiece('h', 1, new Tower(Color.White, Board));
+            CreatePiece('a', 2, new Pawn(Color.White, Board));
+            CreatePiece('b', 2, new Pawn(Color.White, Board));
+            CreatePiece('c', 2, new Pawn(Color.White, Board));
+            CreatePiece('d', 2, new Pawn(Color.White, Board));
+            CreatePiece('e', 2, new Pawn(Color.White, Board));
+            CreatePiece('f', 2, new Pawn(Color.White, Board));
+            CreatePiece('g', 2, new Pawn(Color.White, Board));
+            CreatePiece('h', 2, new Pawn(Color.White, Board));
+            #endregion
 
-            CreatePiece('d', 8, new King(Color.Black, Board));
-            CreatePiece('c', 8, new Tower(Color.Black, Board));
-            CreatePiece('c', 7, new Tower(Color.Black, Board));
-            CreatePiece('d', 7, new Tower(Color.Black, Board));
-            CreatePiece('e', 7, new Tower(Color.Black, Board));
-            CreatePiece('e', 8, new Tower(Color.Black, Board));
+            #region Black pieces
+            CreatePiece('e', 8, new King(Color.Black, Board));
+            CreatePiece('d', 8, new Queen(Color.Black, Board));
+            CreatePiece('c', 8, new Bishop(Color.Black, Board));
+            CreatePiece('f', 8, new Bishop(Color.Black, Board));
+            CreatePiece('b', 8, new Horse(Color.Black, Board));
+            CreatePiece('g', 8, new Horse(Color.Black, Board));
+            CreatePiece('a', 8, new Tower(Color.Black, Board));
+            CreatePiece('h', 8, new Tower(Color.Black, Board));
+            CreatePiece('a', 7, new Pawn(Color.Black, Board));
+            CreatePiece('b', 7, new Pawn(Color.Black, Board));
+            CreatePiece('c', 7, new Pawn(Color.Black, Board));
+            CreatePiece('d', 7, new Pawn(Color.Black, Board));
+            CreatePiece('e', 7, new Pawn(Color.Black, Board));
+            CreatePiece('f', 7, new Pawn(Color.Black, Board));
+            CreatePiece('g', 7, new Pawn(Color.Black, Board));
+            CreatePiece('h', 7, new Pawn(Color.Black, Board));
+            #endregion
 
             UpdatePiecesPossibleMoves();
         }
@@ -76,18 +100,21 @@ namespace GameRules
         {
             Piece collectedPiece = MakeAMove(origin, destination);
 
-            if (isCheckmate(TurnPlayer))
+            if (isCheck(TurnPlayer))
             {
                 RollbackPlay(origin, destination, collectedPiece);
                 throw new GameBoardException("You cannot put yourself in check!");
             }
-            if (isCheckmate(GetEnemyColor(TurnPlayer)))
-                Checked = true;
-            else
-                Checked = false;
 
-            Turn++;
-            ChangeTurnPlayer();
+            Checked = isCheck(GetEnemyColor(TurnPlayer));
+
+            if (isCheckmate(GetEnemyColor(TurnPlayer)))
+                Finished = true;
+            else
+            {
+                Turn++;
+                ChangeTurnPlayer();
+            }
         }
 
         private void RollbackPlay(Position origin, Position destination, Piece collectedPiece)
@@ -141,7 +168,7 @@ namespace GameRules
             throw new GameBoardException($"There is an king missing in {playerColor} pieces!");
         }
 
-        private bool isCheckmate(Color player)
+        private bool isCheck(Color player)
         {
             Piece king = GetKingPiece(player);
             Color enemy = GetEnemyColor(player);
@@ -151,6 +178,35 @@ namespace GameRules
                     return true;
             }
             return false;
+        }
+
+        private bool isCheckmate(Color player)
+        {
+            if (!isCheck(player))
+            {
+                return false;
+            }
+
+            foreach (var piece in PiecesSet)
+            {
+                for (var line = 0; piece.Color == player && line < Board.Lines; line++)
+                {
+                    for (var column = 0; column < Board.Columns; column++)
+                    {
+                        if (piece.PossibleMoves[line, column])
+                        {
+                            Position origin = piece.Position;
+                            Position destination = new Position(line, column);
+                            Piece initialPiece = MakeAMove(origin, destination);
+                            bool isChecked = isCheck(player);
+                            RollbackPlay(origin, destination, initialPiece);
+                            if (!isChecked)
+                                return false;
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
         public void ValidOriginPosition(Piece piece)

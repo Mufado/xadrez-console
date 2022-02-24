@@ -48,9 +48,13 @@
     <Compile Include="GameBoard\Gameboard.cs" />
     <Compile Include="GameBoard\Piece.cs" />
     <Compile Include="GameBoard\Position.cs" />
+    <Compile Include="GameRules\Bishop.cs" />
     <Compile Include="GameRules\BoardPosition.cs" />
     <Compile Include="GameRules\GameMatch.cs" />
+    <Compile Include="GameRules\Horse.cs" />
     <Compile Include="GameRules\King.cs" />
+    <Compile Include="GameRules\Pawn.cs" />
+    <Compile Include="GameRules\Queen.cs" />
     <Compile Include="GameRules\Tower.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

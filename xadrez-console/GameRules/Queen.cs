@@ -1,11 +1,10 @@
 ﻿using GameBoard;
-using System;
 
 namespace GameRules
 {
-    class Tower : Piece
+    class Queen : Piece
     {
-        public Tower(Color color, Gameboard board) : base(color, board)
+        public Queen(Color color, Gameboard board) : base(color, board)
         {
         }
 
@@ -27,6 +26,19 @@ namespace GameRules
             }
             #endregion
 
+            #region Upper rigth diagonal
+            position.SetPosition(Position.Line - 1, Position.Column + 1);
+            while (Board.isValidPosition(position) && canMoveToPosition(position))
+            {
+                movesMatrix[position.Line, position.Column] = true;
+                if (Board.PiecePlace(position) != null)
+                {
+                    break;
+                }
+                position.SetPosition(position.Line - 1, position.Column + 1);
+            }
+            #endregion
+
             #region Right
             position.SetPosition(Position.Line, Position.Column + 1);
             while (Board.isValidPosition(position) && canMoveToPosition(position))
@@ -37,6 +49,19 @@ namespace GameRules
                     break;
                 }
                 position.SetPosition(position.Line, position.Column + 1);
+            }
+            #endregion
+
+            #region Lower right diagonal
+            position.SetPosition(Position.Line + 1, Position.Column + 1);
+            while (Board.isValidPosition(position) && canMoveToPosition(position))
+            {
+                movesMatrix[position.Line, position.Column] = true;
+                if (Board.PiecePlace(position) != null)
+                {
+                    break;
+                }
+                position.SetPosition(position.Line + 1, position.Column + 1);
             }
             #endregion
 
@@ -53,6 +78,19 @@ namespace GameRules
             }
             #endregion
 
+            #region Lower left diagonal
+            position.SetPosition(Position.Line + 1, Position.Column - 1);
+            while (Board.isValidPosition(position) && canMoveToPosition(position))
+            {
+                movesMatrix[position.Line, position.Column] = true;
+                if (Board.PiecePlace(position) != null)
+                {
+                    break;
+                }
+                position.SetPosition(position.Line + 1, position.Column - 1);
+            }
+            #endregion
+
             #region Left
             position.SetPosition(Position.Line, Position.Column - 1);
             while (Board.isValidPosition(position) && canMoveToPosition(position))
@@ -66,9 +104,22 @@ namespace GameRules
             }
             #endregion
 
+            #region Upper left diagonal
+            position.SetPosition(Position.Line - 1, Position.Column - 1);
+            while (Board.isValidPosition(position) && canMoveToPosition(position))
+            {
+                movesMatrix[position.Line, position.Column] = true;
+                if (Board.PiecePlace(position) != null)
+                {
+                    break;
+                }
+                position.SetPosition(position.Line - 1, position.Column - 1);
+            }
+            #endregion
+
             return movesMatrix;
         }
 
-        public override string ToString() => "T";
+        public override string ToString() => "Q";
     }
 }
